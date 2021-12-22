@@ -3,3 +3,14 @@
   display: flex;
   flex-direction: row;
 }
+#sidebar {
+  width: 30%;
+  height: 100%;
+}
+#chats {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 70%;
+  height: 100%;
+}

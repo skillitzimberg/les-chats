@@ -1,16 +1,29 @@
+import React, { useState } from "react";
 import "./App.css";
 import Users from "./Users";
 import Messages from "./Messages";
-import TextInput from "./TextInput";
+import ChatForm from "./ChatForm";
 import userData from "./Dummy_Data/userData";
 
 function App() {
+  const [data, setData] = useState(userData);
+
+  function handleNewMessage(message) {
+    data[0].messages.push({ timeStamp: Date.now(), text: message });
+    setData(data);
+    console.log(data);
+  }
+
   return (
-    <div className="App">
-      <Users userNames={userNames(userData)} />
-      <Messages userData={userData} />
-      <TextInput />
-    </div>
+    <main className="App">
+      <section id="sidebar">
+        <Users userNames={userNames(data)} />
+      </section>
+      <section id="chats">
+        <Messages userData={data} />
+        <ChatForm handleNewMessage={handleNewMessage} />
+      </section>
+    </main>
   );
 }
 
