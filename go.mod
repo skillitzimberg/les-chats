@@ -1,3 +1,5 @@
-module github.com/les-chats
+module github.com/skillitzimberg/les-chats
 
 go 1.17
+
+require github.com/gorilla/mux v1.8.0 // indirect
