@@ -1,0 +1,19 @@
+#register {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 30%;
+}
+
+#register label {
+  display: flex;
+  flex-direction: column;
+}
+
+#warn {
+  color: red;
+}
+
+.hidden {
+  display: none;
+}

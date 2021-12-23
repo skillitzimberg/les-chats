@@ -3,33 +3,40 @@ import "./App.css";
 import Users from "./Users";
 import Messages from "./Messages";
 import ChatForm from "./ChatForm";
-import userData from "./Dummy_Data/userData";
+import Registration from "./Registration";
+import { usersData, messagesData } from "./Dummy_Data/chatData";
 
 function App() {
-  const [data, setData] = useState(userData);
+  const [users, setUsers] = useState(usersData);
+  const [messages, setMessages] = useState(messagesData);
 
   function handleNewMessage(message) {
-    data[0].messages.push({ timeStamp: Date.now(), text: message });
-    setData(data);
-    console.log(data);
+    const newMessage = { timeStamp: Date.now(), text: message };
+    setMessages([...messages, newMessage]);
+  }
+
+  function handleNewUser(username, password) {
+    const newUser = {
+      id: users.length + 1,
+      username: username,
+      password: password,
+    };
+    setUsers([...users, newUser]);
+    console.log(users);
   }
 
   return (
     <main className="App">
+      <Registration handleNewUser={handleNewUser} />
       <section id="sidebar">
-        <Users userNames={userNames(data)} />
+        <Users users={users} />
       </section>
       <section id="chats">
-        <Messages userData={data} />
+        <Messages messages={messages} />
         <ChatForm handleNewMessage={handleNewMessage} />
       </section>
     </main>
   );
 }
-
-const userNames = (userData) =>
-  userData.map((user) => {
-    return user.name;
-  });
 
 export default App;

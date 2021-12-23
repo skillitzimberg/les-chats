@@ -2,12 +2,12 @@ import React from "react";
 import "./Users.css";
 import SectionHeader from "./SectionHeader";
 
-export default function Users(props) {
+export default function Users({ users }) {
   return (
     <section id="users">
       <SectionHeader title={"Users Online"} />
-      {props.userNames.map((name) => {
-        return <div key={name}>{name}</div>;
+      {users.map((user) => {
+        return <div key={user.id}>{user.name}</div>;
       })}
     </section>
   );

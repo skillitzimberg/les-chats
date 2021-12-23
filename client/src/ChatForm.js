@@ -3,10 +3,12 @@ import "./ChatForm.css";
 
 const ChatForm = (props) => {
   const [message, setMessage] = useState("");
+
   function handleSubmit(e) {
     e.preventDefault();
     props.handleNewMessage(message);
   }
+
   return (
     <section id="text-input">
       <form id="new-message" onSubmit={handleSubmit}>
