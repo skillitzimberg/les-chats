@@ -60,10 +60,10 @@ export default function Registration({ handleNewUser }) {
       </label>
 
       <span id="warn" className={warning}>
-        Passwords do not match - please try again
+        Passwords do not match. Please try again.
       </span>
 
-      <button type="submit">Enter</button>
+      <button type="submit">Register</button>
     </form>
   );
 }

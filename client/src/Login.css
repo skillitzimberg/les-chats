@@ -1,0 +1,19 @@
+#login {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 30%;
+}
+
+#login label {
+  display: flex;
+  flex-direction: column;
+}
+
+#warn {
+  color: red;
+}
+
+.hidden {
+  display: none;
+}

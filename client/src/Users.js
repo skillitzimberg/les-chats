@@ -7,7 +7,7 @@ export default function Users({ users }) {
     <section id="users">
       <SectionHeader title={"Users Online"} />
       {users.map((user) => {
-        return <div key={user.id}>{user.name}</div>;
+        return <div key={user.id}>{user.username}</div>;
       })}
     </section>
   );

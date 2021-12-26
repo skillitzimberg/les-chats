@@ -1,11 +1,11 @@
 export const usersData = [
   {
     id: 1,
-    name: "Scott",
+    username: "Scott",
   },
   {
     id: 2,
-    name: "Yu Ling",
+    username: "Yu Ling",
   },
 ];
 
