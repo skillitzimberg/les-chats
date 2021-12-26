@@ -30,7 +30,8 @@ function App() {
 
   function handleLogin(loginSuccessful) {
     setIsLoggedIn(loginSuccessful);
-    if (isLoggedIn) {
+    if (loginSuccessful) {
+      window.location.href = "/";
       console.log("Success!");
       console.log(isLoggedIn);
     } else {
