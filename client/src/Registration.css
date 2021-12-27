@@ -10,7 +10,7 @@
   flex-direction: column;
 }
 
-#warn {
+.warn {
   color: red;
 }
 

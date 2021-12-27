@@ -7,7 +7,11 @@ const Messages = ({ messages }) => {
     <section id="messages">
       <SectionHeader title={"Messages"} />
       {messages.map((message) => {
-        return <div key={message.id}>{message.text}</div>;
+        return (
+          <div key={message.id}>
+            {message.from}: {message.text}
+          </div>
+        );
       })}
     </section>
   );
