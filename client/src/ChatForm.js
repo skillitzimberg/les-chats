@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import "./ChatForm.css";
 
-const ChatForm = (props) => {
+const ChatForm = ({ handleNewMessage }) => {
   const [message, setMessage] = useState("");
 
   function handleSubmit(e) {
     e.preventDefault();
-    props.handleNewMessage(message);
+    handleNewMessage(message);
   }
 
   return (

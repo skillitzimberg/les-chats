@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
 
 import "./App.css";
 import ChatForm from "./ChatForm";
@@ -10,28 +15,38 @@ import Users from "./Users";
 import { usersData, messagesData } from "./Dummy_Data/chatData";
 
 function App() {
-  const [users, setUsers] = useState(usersData);
+  const [users, setUsers] = useState(initializeUserData());
   const [messages, setMessages] = useState(messagesData);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  function handleNewUser(username, password) {
+  function initializeUserData() {
+    const usrs = localStorage.getItem("users")
+      ? JSON.parse(localStorage.getItem("users"))
+      : usersData;
+
+    localStorage.setItem("users", JSON.stringify(usrs));
+    return usrs;
+  }
+  function handleRegistration(newUsername, password) {
     const newUser = {
       id: users.length + 1,
-      username: username,
+      username: newUsername,
       password: password,
     };
+    console.log([...users, newUser]);
     setUsers([...users, newUser]);
     localStorage.setItem("users", JSON.stringify(users));
-    console.log(JSON.parse(localStorage.getItem("users")));
+    localStorage.setItem("currentUser", JSON.stringify(newUser));
   }
 
   function handleLogin(loginSuccessful) {
     setIsLoggedIn(loginSuccessful);
     if (loginSuccessful) {
-      window.location.href = "/";
+      console.log("Success!");
+      console.log(loginSuccessful);
     } else {
       console.log("Failure!");
-      console.log(isLoggedIn);
+      console.log(loginSuccessful);
     }
   }
 
@@ -51,7 +66,7 @@ function App() {
         <Routes>
           <Route
             path="/register"
-            element={<Registration handleNewUser={handleNewUser} />}
+            element={<Registration handleRegistration={handleRegistration} />}
           />
           <Route path="/login" element={<Login handleLogin={handleLogin} />} />
           <Route

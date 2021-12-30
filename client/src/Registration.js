@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./Registration.css";
 
-export default function Registration() {
+export default function Registration({ handleRegistration }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -14,33 +14,17 @@ export default function Registration() {
     e.preventDefault();
     if (confirmPassword !== password) {
       setPasswordWarning("");
+    } else if (usernameIsTaken(username)) {
       setUsernameWarning("");
     } else {
-      handleNewUser(username, password);
+      setUsernameWarning("hidden");
+      handleRegistration(username, password);
     }
   }
 
-  function handleNewUser(username, password) {
-    let users = JSON.parse(localStorage.getItem("users"));
-    const newUser = {
-      id: users.length + 1,
-      username: username,
-      password: password,
-    };
-    users = [...users, newUser];
-    localStorage.setItem("users", JSON.stringify(users));
-    console.log(JSON.parse(localStorage.getItem("users")));
-  }
-
-  function verifyNoUsernameConflict(username) {
+  function usernameIsTaken(newUsername) {
     const users = JSON.parse(localStorage.getItem("users"));
-    users.map((user) => {
-      if (user.username === username) {
-        setUsernameWarning("");
-      } else {
-        setUsernameWarning("hidden");
-      }
-    });
+    return users.some((user) => user.username === newUsername);
   }
 
   function verifyPasswordMatch(value) {
@@ -62,7 +46,7 @@ export default function Registration() {
         <input
           id="username"
           name="username"
-          onChange={(e) => verifyNoUsernameConflict(e.target.value)}
+          onChange={(e) => setUsername(e.target.value)}
         ></input>
       </label>
 

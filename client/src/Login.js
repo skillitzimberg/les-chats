@@ -1,11 +1,13 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import "./Login.css";
 
 export default function Login({ handleLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [warning, setWarning] = useState("hidden");
-
+  const navigate = useNavigate();
   function onSubmit(e) {
     e.preventDefault();
     setWarning("hidden");
@@ -15,6 +17,7 @@ export default function Login({ handleLogin }) {
     } else {
       console.log(username, password);
       localStorage.setItem("currentUser", username);
+      navigate("/");
       handleLogin(true);
     }
   }
