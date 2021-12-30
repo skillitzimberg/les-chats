@@ -3,7 +3,7 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useNavigate,
+  Navigate,
 } from "react-router-dom";
 
 import "./App.css";
@@ -15,28 +15,19 @@ import Users from "./Users";
 import { usersData, messagesData } from "./Dummy_Data/chatData";
 
 function App() {
-  const [users, setUsers] = useState(initializeUserData());
+  const [users, setUsers] = useState(usersData);
   const [messages, setMessages] = useState(messagesData);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  function initializeUserData() {
-    const usrs = localStorage.getItem("users")
-      ? JSON.parse(localStorage.getItem("users"))
-      : usersData;
-
-    localStorage.setItem("users", JSON.stringify(usrs));
-    return usrs;
-  }
   function handleRegistration(newUsername, password) {
     const newUser = {
       id: users.length + 1,
       username: newUsername,
       password: password,
     };
-    console.log([...users, newUser]);
     setUsers([...users, newUser]);
-    localStorage.setItem("users", JSON.stringify(users));
-    localStorage.setItem("currentUser", JSON.stringify(newUser));
+    handleLogin(true);
+    window.location.href = "/";
   }
 
   function handleLogin(loginSuccessful) {
@@ -72,15 +63,19 @@ function App() {
           <Route
             path="/"
             element={
-              <>
-                <section id="sidebar">
-                  <Users users={users} />
-                </section>
-                <section id="chats">
-                  <Messages messages={messages} />
-                  <ChatForm handleNewMessage={handleNewMessage} />
-                </section>
-              </>
+              isLoggedIn ? (
+                <>
+                  <section id="sidebar">
+                    <Users users={users} />
+                  </section>
+                  <section id="chats">
+                    <Messages messages={messages} />
+                    <ChatForm handleNewMessage={handleNewMessage} />
+                  </section>
+                </>
+              ) : (
+                <Navigate to="/login" />
+              )
             }
           />
         </Routes>

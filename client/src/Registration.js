@@ -6,7 +6,6 @@ export default function Registration({ handleRegistration }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordWarning, setPasswordWarning] = useState("hidden");
-  const [usernameWarning, setUsernameWarning] = useState("hidden");
 
   const warningClass = "warn";
 
@@ -14,17 +13,9 @@ export default function Registration({ handleRegistration }) {
     e.preventDefault();
     if (confirmPassword !== password) {
       setPasswordWarning("");
-    } else if (usernameIsTaken(username)) {
-      setUsernameWarning("");
     } else {
-      setUsernameWarning("hidden");
       handleRegistration(username, password);
     }
-  }
-
-  function usernameIsTaken(newUsername) {
-    const users = JSON.parse(localStorage.getItem("users"));
-    return users.some((user) => user.username === newUsername);
   }
 
   function verifyPasswordMatch(value) {
@@ -69,13 +60,6 @@ export default function Registration({ handleRegistration }) {
           onChange={(e) => verifyPasswordMatch(e.target.value)}
         ></input>
       </label>
-
-      <span
-        id="username-warning"
-        className={`${usernameWarning} ${warningClass}`}
-      >
-        Username already exists. Login or register with a different username.
-      </span>
 
       <span
         id="password-warning"
