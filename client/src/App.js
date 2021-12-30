@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import "./App.css";
 import ChatForm from "./ChatForm";
@@ -13,6 +8,7 @@ import Messages from "./Messages";
 import Registration from "./Registration";
 import Users from "./Users";
 import { usersData, messagesData } from "./Dummy_Data/chatData";
+import PrivateRoute from "./PrivateRoute";
 
 function App() {
   const [users, setUsers] = useState(usersData);
@@ -31,7 +27,7 @@ function App() {
   }
 
   function handleLogin(loginSuccessful) {
-    setIsLoggedIn(loginSuccessful);
+    localStorage.setItem("isLoggedIn", loginSuccessful);
     if (loginSuccessful) {
       console.log("Success!");
       console.log(loginSuccessful);
@@ -63,19 +59,17 @@ function App() {
           <Route
             path="/"
             element={
-              isLoggedIn ? (
-                <>
-                  <section id="sidebar">
-                    <Users users={users} />
-                  </section>
-                  <section id="chats">
-                    <Messages messages={messages} />
-                    <ChatForm handleNewMessage={handleNewMessage} />
-                  </section>
-                </>
-              ) : (
-                <Navigate to="/login" />
-              )
+              <PrivateRoute
+                isloggedIn={JSON.parse(localStorage.getItem("isLoggedIn"))}
+              >
+                <section id="sidebar">
+                  <Users users={users} />
+                </section>
+                <section id="chats">
+                  <Messages messages={messages} />
+                  <ChatForm handleNewMessage={handleNewMessage} />
+                </section>
+              </PrivateRoute>
             }
           />
         </Routes>
