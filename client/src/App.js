@@ -13,7 +13,6 @@ import PrivateRoute from "./PrivateRoute";
 function App() {
   const [users, setUsers] = useState(usersData);
   const [messages, setMessages] = useState(messagesData);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   function handleRegistration(newUsername, password) {
     const newUser = {
@@ -21,6 +20,7 @@ function App() {
       username: newUsername,
       password: password,
     };
+    localStorage.setItem("registeredUser", JSON.stringify(newUser));
     setUsers([...users, newUser]);
     handleLogin(true);
     window.location.href = "/";
@@ -38,9 +38,10 @@ function App() {
   }
 
   function handleNewMessage(message) {
+    const registeredUser = JSON.parse(localStorage.getItem("registeredUser"));
     const newMessage = {
       id: messages.length + 1,
-      from: localStorage.getItem("currentUser"),
+      from: registeredUser.username,
       text: message,
       timeStamp: Date.now(),
     };

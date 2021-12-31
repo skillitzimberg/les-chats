@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import "./Login.css";
 
@@ -12,7 +12,13 @@ export default function Login({ handleLogin }) {
   function onSubmit(e) {
     e.preventDefault();
     setWarning("hidden");
-    if (username !== "commandinghands" || password !== "werwer") {
+    const registeredUser = JSON.parse(localStorage.getItem("registeredUser"));
+    console.log(registeredUser);
+    if (
+      registeredUser === null ||
+      username !== registeredUser.username ||
+      password !== registeredUser.password
+    ) {
       setWarning("");
       handleLogin(false);
     } else {
@@ -45,7 +51,8 @@ export default function Login({ handleLogin }) {
       </label>
 
       <span id="warn" className={warning}>
-        Invalid log in credentials. Please register or try again.
+        Invalid log in credentials. Please <Link to="/register">register</Link>{" "}
+        or try again.
       </span>
 
       <button type="submit">Log In</button>
