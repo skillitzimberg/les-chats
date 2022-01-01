@@ -7,5 +7,5 @@ type message struct {
 }
 
 func newMessage(id int, userID int, text string) *message {
-	return &message{Id: 0, UserID: userID, Text: text}
+	return &message{Id: id, UserID: userID, Text: text}
 }
