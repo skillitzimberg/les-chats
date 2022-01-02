@@ -3,11 +3,25 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 )
+
+func createUser(w http.ResponseWriter, r *http.Request) {
+	var newUser user
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Could not read the request body.")
+	}
+	
+	json.Unmarshal(reqBody, &newUser)
+	users = append(users, newUser)
+
+	json.NewEncoder(w).Encode(newUser)
+}
 
 func getUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
@@ -29,6 +43,17 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 		json.NewEncoder(w).Encode(fmt.Sprintf("User %v not found", id))
+}
+
+func createMessage(w http.ResponseWriter, r *http.Request) {
+	var newMessage message
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Could not read the request body")
+	}
+	json.Unmarshal(reqBody, &newMessage)
+	messages = append(messages, newMessage)
+	json.NewEncoder(w).Encode(newMessage)
 }
 
 func getMessages(w http.ResponseWriter, r *http.Request) {
@@ -54,8 +79,11 @@ func getMessage(w http.ResponseWriter, r *http.Request) {
 }
 
 func registerEndpoints() {
-	router.HandleFunc("/api/users", getUsers)
-	router.HandleFunc("/api/users/{id}", getUser)
-	router.HandleFunc("/api/messages", getMessages)
-	router.HandleFunc("/api/messages/{id}", getMessage)
+	router.HandleFunc("/api/users", createUser).Methods("POST")
+	router.HandleFunc("/api/users", getUsers).Methods("GET")
+	router.HandleFunc("/api/users/{id}", getUser).Methods("GET")
+
+	router.HandleFunc("/api/messages", createMessage).Methods("POST")
+	router.HandleFunc("/api/messages", getMessages).Methods("GET")
+	router.HandleFunc("/api/messages/{id}", getMessage).Methods("GET")
 }

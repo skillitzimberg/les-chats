@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -13,6 +14,7 @@ type clientHandler struct {
 
 func (ch clientHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path, err := filepath.Abs(r.URL.Path)
+	fmt.Println(path)
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -20,6 +22,8 @@ func (ch clientHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	path = filepath.Join(ch.staticPath, path)
+
+	fmt.Println(path)
 
 	_, err = os.Stat(path)
 	if os.IsNotExist(err) {
@@ -31,4 +35,9 @@ func (ch clientHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.FileServer(http.Dir(ch.staticPath)).ServeHTTP(w, r)
+}
+
+func serveClient() {
+	client := clientHandler{staticPath: "../client/build", indexPath: "index.html"}
+	router.PathPrefix("/").Handler(client)
 }

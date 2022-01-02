@@ -10,14 +10,9 @@ import (
 
 var router = mux.NewRouter()
 
-func serveClient() {
-	client := clientHandler{staticPath: "../client/build", indexPath: "index.html"}
-	router.PathPrefix("/").Handler(client)
-}
-
 func main() {
-	serveClient()
 	registerEndpoints()
+	serveClient()
 	
 	srv := &http.Server{
 		Handler: router,
