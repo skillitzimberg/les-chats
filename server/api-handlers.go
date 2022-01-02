@@ -8,7 +8,6 @@ import (
 
 	"github.com/gorilla/mux"
 )
-var router = mux.NewRouter()
 
 func getUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
