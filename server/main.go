@@ -6,8 +6,8 @@ import (
 )
 
 func serveClient() {
-	fs := http.FileServer(http.Dir("../client/build"))
-	http.Handle("/", fs)
+	client := clientHandler{staticPath: "../client/build", indexPath: "index.html"}
+	router.PathPrefix("/").Handler(client)
 }
 
 func main() {
