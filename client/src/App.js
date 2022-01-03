@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import "./App.css";
@@ -11,8 +11,18 @@ import { usersData, messagesData } from "./Dummy_Data/chatData";
 import PrivateRoute from "./PrivateRoute";
 
 function App() {
-  const [users, setUsers] = useState(usersData);
-  const [messages, setMessages] = useState(messagesData);
+  const [users, setUsers] = useState([]);
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    fetch("/api/users")
+      .then((resp) => resp.json())
+      .then((usrsData) => setUsers(usrsData));
+
+    fetch("/api/messages")
+      .then((resp) => resp.json())
+      .then((usrsData) => setMessages(usrsData));
+  }, []);
 
   function handleRegistration(newUsername, password) {
     const newUser = {

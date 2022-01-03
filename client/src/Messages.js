@@ -9,7 +9,7 @@ const Messages = ({ messages }) => {
       {messages.map((message) => {
         return (
           <div key={message.id}>
-            {message.from}: {message.text}
+            {message.username}: {message.text}
           </div>
         );
       })}
