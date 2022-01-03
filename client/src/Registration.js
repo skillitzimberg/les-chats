@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Navigate } from "react-router-dom";
+
 import "./Registration.css";
 
 export default function Registration({ handleRegistration }) {
@@ -15,6 +17,7 @@ export default function Registration({ handleRegistration }) {
       setPasswordWarning("");
     } else {
       handleRegistration(username, password);
+      <Navigate to="/" />;
     }
   }
 

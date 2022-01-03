@@ -7,7 +7,6 @@ import Login from "./Login";
 import Messages from "./Messages";
 import Registration from "./Registration";
 import Users from "./Users";
-import { usersData, messagesData } from "./Dummy_Data/chatData";
 import PrivateRoute from "./PrivateRoute";
 
 function App() {
@@ -31,9 +30,24 @@ function App() {
       password: password,
     };
     localStorage.setItem("registeredUser", JSON.stringify(newUser));
-    setUsers([...users, newUser]);
+
+    fetch("/api/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newUser),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Success:", data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+
     handleLogin(true);
-    window.location.href = "/";
+    // window.location.href = "/";
   }
 
   function handleLogin(loginSuccessful) {
