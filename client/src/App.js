@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import "./App.css";
-import ChatForm from "./ChatForm";
-import Login from "./Login";
-import Messages from "./Messages";
-import Registration from "./Registration";
-import Users from "./Users";
-import PrivateRoute from "./PrivateRoute";
+import ChatForm from "./Components/ChatForm";
+import Login from "./Components/Login";
+import Messages from "./Components/Messages";
+import Registration from "./Components/Registration";
+import Users from "./Components/Users";
+import PrivateRoute from "./Components/PrivateRoute";
 
 function App() {
   const [users, setUsers] = useState([]);
