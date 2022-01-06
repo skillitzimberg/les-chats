@@ -12,20 +12,20 @@ export default function Login({ handleLogin }) {
   function onSubmit(e) {
     e.preventDefault();
     setWarning("hidden");
-    const registeredUser = JSON.parse(localStorage.getItem("registeredUser"));
-    console.log(registeredUser);
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    console.log("currentUser", currentUser);
     if (
-      registeredUser === null ||
-      username !== registeredUser.username ||
-      password !== registeredUser.password
+      currentUser === null ||
+      username !== currentUser.username ||
+      password !== currentUser.password
     ) {
       setWarning("");
       handleLogin(false);
     } else {
       console.log(username, password);
       localStorage.setItem("currentUser", username);
-      navigate("/");
       handleLogin(true);
+      navigate("/");
     }
   }
 

@@ -12,15 +12,25 @@ import PrivateRoute from "./Components/PrivateRoute";
 function App() {
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    fetch("/api/users")
-      .then((resp) => resp.json())
-      .then((usrsData) => setUsers(usrsData));
+    const loadUsers = () => {
+      fetch("/api/users")
+        .then((resp) => resp.json())
+        .then((usrsData) => setUsers(usrsData));
+    };
+    const loadMessages = () => {
+      fetch("/api/messages")
+        .then((resp) => resp.json())
+        .then((usrsData) => setMessages(usrsData));
+    };
+    const checkIsLoggedIn = () =>
+      JSON.parse(localStorage.getItem("isLoggedIn"));
 
-    fetch("/api/messages")
-      .then((resp) => resp.json())
-      .then((usrsData) => setMessages(usrsData));
+    loadUsers();
+    loadMessages();
+    checkIsLoggedIn();
   }, []);
 
   function handleRegistration(newUsername, password) {
@@ -29,7 +39,6 @@ function App() {
       username: newUsername,
       password: password,
     };
-    localStorage.setItem("registeredUser", JSON.stringify(newUser));
 
     fetch("/api/users", {
       method: "POST",
@@ -39,9 +48,10 @@ function App() {
       body: JSON.stringify(newUser),
     })
       .then((response) => response.json())
-      .then((data) => {
-        console.log("Registered:", data);
-        setUsers([...users, data]);
+      .then((userData) => {
+        console.log("Registered:", userData);
+        setUsers([...users, userData]);
+        localStorage.setItem("currentUser", JSON.stringify(userData));
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -51,7 +61,7 @@ function App() {
   }
 
   function handleLogin(loginSuccessful) {
-    localStorage.setItem("isLoggedIn", loginSuccessful);
+    setIsLoggedIn(loginSuccessful);
     if (loginSuccessful) {
       console.log("Login Success:", loginSuccessful);
     } else {
@@ -60,10 +70,10 @@ function App() {
   }
 
   function handleNewMessage(message) {
-    const registeredUser = JSON.parse(localStorage.getItem("registeredUser"));
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
     const newMessage = {
       id: messages.length + 1,
-      from: registeredUser.username,
+      from: currentUser.username,
       text: message,
       timeStamp: Date.now(),
     };
@@ -82,9 +92,7 @@ function App() {
           <Route
             path="/"
             element={
-              <PrivateRoute
-                isloggedIn={JSON.parse(localStorage.getItem("isLoggedIn"))}
-              >
+              <PrivateRoute isloggedIn={isLoggedIn}>
                 <section id="sidebar">
                   <Users users={users} />
                 </section>
