@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 import "./Registration.css";
 
@@ -10,6 +10,7 @@ export default function Registration({ handleRegistration }) {
   const [passwordWarning, setPasswordWarning] = useState("hidden");
 
   const warningClass = "warn";
+  const navigate = useNavigate();
 
   function onSubmit(e) {
     e.preventDefault();
@@ -17,7 +18,7 @@ export default function Registration({ handleRegistration }) {
       setPasswordWarning("");
     } else {
       handleRegistration(username, password);
-      <Navigate to="/" />;
+      navigate("/", { replace: true });
     }
   }
 

@@ -40,24 +40,22 @@ function App() {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("Success:", data);
+        console.log("Registered:", data);
+        setUsers([...users, data]);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
 
     handleLogin(true);
-    // window.location.href = "/";
   }
 
   function handleLogin(loginSuccessful) {
     localStorage.setItem("isLoggedIn", loginSuccessful);
     if (loginSuccessful) {
-      console.log("Success!");
-      console.log(loginSuccessful);
+      console.log("Login Success:", loginSuccessful);
     } else {
-      console.log("Failure!");
-      console.log(loginSuccessful);
+      console.log("Login Failure:", loginSuccessful);
     }
   }
 
