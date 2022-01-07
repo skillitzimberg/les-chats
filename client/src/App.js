@@ -25,12 +25,9 @@ function App() {
         .then((resp) => resp.json())
         .then((usrsData) => setMessages(usrsData));
     };
-    const checkIsLoggedIn = () =>
-      JSON.parse(localStorage.getItem("isLoggedIn"));
 
     loadUsers();
     loadMessages();
-    checkIsLoggedIn();
   }, []);
 
   function handleRegistration(newUsername, password) {

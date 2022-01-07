@@ -22,7 +22,6 @@ export default function Login({ handleLogin }) {
       setWarning("");
       handleLogin(false);
     } else {
-      console.log(username, password);
       localStorage.setItem("currentUser", username);
       handleLogin(true);
       navigate("/");
