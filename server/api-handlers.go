@@ -18,9 +18,16 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	json.Unmarshal(reqBody, &newUser)
-	users = append(users, newUser)
-
-	json.NewEncoder(w).Encode(newUser)
+	// Check users to make sure that the newUser is not a duplicate
+	if isUniqueUser(newUser) {
+		users = append(users, newUser)
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(newUser)
+		return
+	}
+	
+	w.WriteHeader(http.StatusConflict)
+	json.NewEncoder(w).Encode(fmt.Sprintf("Username: %s already in use.", newUser.Username))
 }
 
 func getUsers(w http.ResponseWriter, r *http.Request) {

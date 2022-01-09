@@ -5,7 +5,7 @@ import SectionHeader from "./SectionHeader";
 export default function Users({ users }) {
   return (
     <section id="users">
-      <SectionHeader title={"Users Online"} />
+      <SectionHeader title={"Users"} />
       {users.map((user) => {
         return <div key={user.id}>{user.username}</div>;
       })}

@@ -15,6 +15,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
+    console.log(isLoggedIn);
     const loadUsers = () => {
       fetch("/api/users")
         .then((resp) => resp.json())
@@ -30,40 +31,39 @@ function App() {
     loadMessages();
   }, []);
 
-  function handleRegistration(newUsername, password) {
+  async function handleRegistration(newUsername, password) {
     const newUser = {
       id: users.length + 1,
       username: newUsername,
       password: password,
     };
 
-    fetch("/api/users", {
+    const response = await fetch("/api/users", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(newUser),
-    })
-      .then((response) => response.json())
-      .then((userData) => {
-        console.log("Registered:", userData);
-        setUsers([...users, userData]);
-        localStorage.setItem("currentUser", JSON.stringify(userData));
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    });
 
-    handleLogin(true);
+    try {
+      if (response.ok) {
+        handleLogin(true, await response.json());
+      } else {
+        handleLogin(false);
+        throw new Error(await response.text());
+      }
+    } catch (e) {
+      console.log(e.message);
+    }
   }
 
-  function handleLogin(loginSuccessful) {
-    setIsLoggedIn(loginSuccessful);
-    if (loginSuccessful) {
-      console.log("Login Success:", loginSuccessful);
-    } else {
-      console.log("Login Failure:", loginSuccessful);
+  function handleLogin(loginSuccessful, user = null) {
+    if (!!user) {
+      console.log(user);
+      localStorage.setItem("currentUser", JSON.stringify(user));
     }
+    setIsLoggedIn(loginSuccessful);
   }
 
   function handleNewMessage(message) {

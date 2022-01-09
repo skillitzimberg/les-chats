@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import "./Login.css";
 
@@ -7,13 +7,14 @@ export default function Login({ handleLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [warning, setWarning] = useState("hidden");
+
   const navigate = useNavigate();
 
   function onSubmit(e) {
     e.preventDefault();
     setWarning("hidden");
+    const usrStr = localStorage.getItem("currentUser");
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-    console.log("currentUser", currentUser);
     if (
       currentUser === null ||
       username !== currentUser.username ||
@@ -22,9 +23,8 @@ export default function Login({ handleLogin }) {
       setWarning("");
       handleLogin(false);
     } else {
-      localStorage.setItem("currentUser", username);
-      handleLogin(true);
-      navigate("/");
+      handleLogin(true, currentUser);
+      navigate("/", { replace: true });
     }
   }
 
