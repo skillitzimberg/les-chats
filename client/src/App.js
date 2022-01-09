@@ -5,9 +5,9 @@ import "./App.css";
 import ChatForm from "./Components/ChatForm";
 import Login from "./Components/Login";
 import Messages from "./Components/Messages";
+import PrivateRoute from "./Components/PrivateRoute";
 import Registration from "./Components/Registration";
 import Users from "./Components/Users";
-import PrivateRoute from "./Components/PrivateRoute";
 
 function App() {
   console.log("App Rendered");
@@ -16,7 +16,7 @@ function App() {
   const [currentUser, setCurrentUser] = useState(
     JSON.parse(localStorage.getItem("currentUser"))
   );
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(currentUser?.isLoggedIn);
 
   useEffect(() => {
     const loadUsers = () => {
@@ -64,6 +64,7 @@ function App() {
   function handleLogin(loginSuccessful, user = null) {
     console.log("loginSuccessful:", loginSuccessful);
     if (!!user) {
+      user.isLoggedIn = true;
       localStorage.setItem("currentUser", JSON.stringify(user));
       setCurrentUser(user);
     }
