@@ -101,7 +101,7 @@ function App() {
           <Route
             path="/"
             element={
-              <PrivateRoute isLoggedIn={isLoggedIn}>
+              <PrivateRoute isLoggedIn={currentUser?.isLoggedIn}>
                 <section id="sidebar">
                   <Users users={users} />
                 </section>
