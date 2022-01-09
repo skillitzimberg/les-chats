@@ -10,12 +10,15 @@ import Users from "./Components/Users";
 import PrivateRoute from "./Components/PrivateRoute";
 
 function App() {
+  console.log("App Rendered");
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [currentUser, setCurrentUser] = useState(
+    JSON.parse(localStorage.getItem("currentUser"))
+  );
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    console.log(isLoggedIn);
     const loadUsers = () => {
       fetch("/api/users")
         .then((resp) => resp.json())
@@ -60,14 +63,15 @@ function App() {
 
   function handleLogin(loginSuccessful, user = null) {
     if (!!user) {
-      console.log(user);
       localStorage.setItem("currentUser", JSON.stringify(user));
+      setCurrentUser(user);
     }
+    console.log(loginSuccessful);
     setIsLoggedIn(loginSuccessful);
+    window.location.replace("/");
   }
 
   function handleNewMessage(message) {
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
     const newMessage = {
       id: messages.length + 1,
       from: currentUser.username,
@@ -79,17 +83,23 @@ function App() {
 
   return (
     <main className="App">
+      {(console.log(currentUser), console.log(isLoggedIn))}
       <Router>
         <Routes>
           <Route
             path="/register"
             element={<Registration handleRegistration={handleRegistration} />}
           />
-          <Route path="/login" element={<Login handleLogin={handleLogin} />} />
+          <Route
+            path="/login"
+            element={
+              <Login handleLogin={handleLogin} currentUser={currentUser} />
+            }
+          />
           <Route
             path="/"
             element={
-              <PrivateRoute isloggedIn={isLoggedIn}>
+              <PrivateRoute isLoggedIn={isLoggedIn}>
                 <section id="sidebar">
                   <Users users={users} />
                 </section>

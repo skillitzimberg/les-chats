@@ -1,30 +1,25 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import "./Login.css";
 
-export default function Login({ handleLogin }) {
+export default function Login({ handleLogin, currentUser }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [warning, setWarning] = useState("hidden");
 
-  const navigate = useNavigate();
-
   function onSubmit(e) {
     e.preventDefault();
     setWarning("hidden");
-    const usrStr = localStorage.getItem("currentUser");
-    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
     if (
       currentUser === null ||
       username !== currentUser.username ||
       password !== currentUser.password
     ) {
       setWarning("");
-      handleLogin(false);
+      handleLogin();
     } else {
       handleLogin(true, currentUser);
-      navigate("/", { replace: true });
     }
   }
 
