@@ -62,11 +62,12 @@ function App() {
   }
 
   function handleLogin(loginSuccessful, user = null) {
+    console.log("loginSuccessful:", loginSuccessful);
     if (!!user) {
       localStorage.setItem("currentUser", JSON.stringify(user));
       setCurrentUser(user);
     }
-    console.log(loginSuccessful);
+    console.log("loginSuccessful:", loginSuccessful);
     setIsLoggedIn(loginSuccessful);
     window.location.replace("/");
   }
