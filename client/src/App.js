@@ -4,19 +4,18 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import ChatForm from "./Components/ChatForm";
 import Login from "./Components/Login";
+import Logout from "./Components/Logout";
 import Messages from "./Components/Messages";
 import PrivateRoute from "./Components/PrivateRoute";
 import Registration from "./Components/Registration";
 import Users from "./Components/Users";
 
 function App() {
-  console.log("App Rendered");
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
   const [currentUser, setCurrentUser] = useState(
     JSON.parse(localStorage.getItem("currentUser"))
   );
-  const [isLoggedIn, setIsLoggedIn] = useState(currentUser?.isLoggedIn);
 
   useEffect(() => {
     const loadUsers = () => {
@@ -53,7 +52,6 @@ function App() {
       if (response.ok) {
         handleLogin(true, await response.json());
       } else {
-        handleLogin(false);
         throw new Error(await response.text());
       }
     } catch (e) {
@@ -62,15 +60,18 @@ function App() {
   }
 
   function handleLogin(loginSuccessful, user = null) {
-    console.log("loginSuccessful:", loginSuccessful);
     if (!!user) {
-      user.isLoggedIn = true;
+      user.isLoggedIn = loginSuccessful;
       localStorage.setItem("currentUser", JSON.stringify(user));
       setCurrentUser(user);
+      window.location.replace("/");
     }
-    console.log("loginSuccessful:", loginSuccessful);
-    setIsLoggedIn(loginSuccessful);
-    window.location.replace("/");
+  }
+
+  function handleLogout() {
+    currentUser.isLoggedIn = false;
+    localStorage.setItem("currentUser", JSON.stringify(currentUser));
+    setCurrentUser(currentUser);
   }
 
   function handleNewMessage(message) {
@@ -85,7 +86,6 @@ function App() {
 
   return (
     <main className="App">
-      {(console.log(currentUser), console.log(isLoggedIn))}
       <Router>
         <Routes>
           <Route
@@ -108,6 +108,7 @@ function App() {
                 <section id="chats">
                   <Messages messages={messages} />
                   <ChatForm handleNewMessage={handleNewMessage} />
+                  <Logout logout={handleLogout} />
                 </section>
               </PrivateRoute>
             }
