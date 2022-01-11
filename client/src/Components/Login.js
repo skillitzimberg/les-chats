@@ -17,7 +17,6 @@ export default function Login({ handleLogin, currentUser }) {
       password !== currentUser.password
     ) {
       setWarning("");
-      handleLogin(false);
     } else {
       handleLogin(true, currentUser);
     }
