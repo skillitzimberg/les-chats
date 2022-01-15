@@ -1,12 +1,12 @@
 package main
 
 type user struct {
-	Id int `json:"id"`
-	Username string  `json:"username"`
+	ID uint `json:"id" gorm:"primaryKey"`
+	Username string  `json:"username" gorm:"unique"`
 	Password string  `json:"password"`
 }
 
-func newUser(id int, username, password string) *user {
-	usr := user{Id: id, Username: username}
+func newUser(id uint, username, password string) *user {
+	usr := user{ID: id, Username: username}
 	return &usr
 }

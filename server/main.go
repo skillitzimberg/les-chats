@@ -11,7 +11,12 @@ import (
 var router = mux.NewRouter()
 
 func main() {
-	registerEndpoints()
+	repo := NewRepo(NewDatabase(dbConfig))
+	repo.MigrateSchema()
+
+	api := &API{*repo}
+	api.registerEndpoints()
+
 	serveClient()
 	
 	srv := &http.Server{

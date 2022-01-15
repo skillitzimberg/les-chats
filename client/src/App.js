@@ -56,6 +56,7 @@ function App() {
       }
     } catch (e) {
       console.log(e.message);
+      alert(e.message);
     }
   }
 
