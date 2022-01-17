@@ -4,10 +4,10 @@ import "testing"
 
 func TestNewDBConfig(t *testing.T) {
 	var tests = []struct {
-		cnf DBConfig
+		cnf  DBConfig
 		want DBConfig
 	}{
-		{*newDBConfig("localhost", 1234, "someuser", "someusername"), DBConfig{"localhost", 1234, "someuser", "someusername"}},
+		{*NewDBConfig("some db name", "Some db user", "localhost", 1234), DBConfig{"some db name", "Some db user", "localhost", 1234}},
 	}
 
 	for _, tt := range tests {
@@ -17,5 +17,5 @@ func TestNewDBConfig(t *testing.T) {
 				t.Errorf("got %v; want %v", tt.cnf, tt.want)
 			}
 		})
-	} 
+	}
 }
