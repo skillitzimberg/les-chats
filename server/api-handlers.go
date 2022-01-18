@@ -50,9 +50,10 @@ func (h *API) register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:    "token",
-		Value:   tokenString,
-		Expires: expires,
+		Name:     "token",
+		Value:    tokenString,
+		Expires:  expires,
+		SameSite: http.SameSiteStrictMode,
 	})
 
 	w.WriteHeader(http.StatusCreated)
