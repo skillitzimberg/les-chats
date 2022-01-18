@@ -3,13 +3,13 @@ package main
 import "gorm.io/gorm"
 
 type Repo struct {
-	db *gorm.DB
+	db    *gorm.DB
 	users *[]user
 }
 
 func NewRepo(db *gorm.DB) *Repo {
 	users := []user{}
-	return &Repo{db, &users} 
+	return &Repo{db, &users}
 }
 
 func (r *Repo) MigrateSchema() {
