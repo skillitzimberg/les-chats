@@ -18,7 +18,6 @@ func (r *Repo) MigrateSchema() {
 
 func (r *Repo) CreateUser(u *user) error {
 	return r.db.Create(u).Error
-
 }
 
 func (r *Repo) GetUsers() (*[]user, error) {

@@ -5,29 +5,58 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/golang-jwt/jwt"
 )
 
 type API struct {
 	repo Repo
 }
 
-func (h *API) createUser(w http.ResponseWriter, r *http.Request) {
+func (h *API) register(w http.ResponseWriter, r *http.Request) {
 	var newUser user
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Fprintf(w, "Could not read the request body.")
+		w.WriteHeader(http.StatusInternalServerError)
 	}
-	
-	json.Unmarshal(reqBody, &newUser)
-	err = h.repo.CreateUser(&newUser)
-	if err == nil {
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(newUser)
+
+	err = json.Unmarshal(reqBody, &newUser)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	fmt.Println(newUser)
+
+	expectedPassword, ok := users[newUser.Username]
+	if !ok || expectedPassword != newUser.Password {
+		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
-	
-	w.WriteHeader(http.StatusConflict)
-	json.NewEncoder(w).Encode(fmt.Sprintf("Could not create user: %s", err.Error()))
+
+	claims := NewClaim(newUser)
+
+	tokenString, err := claims.NewWithClaims(jwt.SigningMethodES256)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	err = h.repo.CreateUser(&newUser)
+	fmt.Println("CreateUser Error:", err)
+	if err != nil {
+		w.WriteHeader(http.StatusConflict)
+		json.NewEncoder(w).Encode(fmt.Sprintf("Could not create user: %s", err.Error()))
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:    "token",
+		Value:   tokenString,
+		Expires: expires,
+	})
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(newUser)
 }
 
 func (h *API) getUsers(w http.ResponseWriter, r *http.Request) {
@@ -79,7 +108,7 @@ func (h *API) getUsers(w http.ResponseWriter, r *http.Request) {
 // 	if err != nil {
 // 		json.NewEncoder(w).Encode(fmt.Sprintf("Invalid ID: %v", vars["id"]))
 // 		return
-// 	} 
+// 	}
 // 	for _, msg := range messages {
 // 		if msg.Id == id {
 // 			message = msg
@@ -91,7 +120,7 @@ func (h *API) getUsers(w http.ResponseWriter, r *http.Request) {
 // }
 
 func (h *API) registerEndpoints() {
-	router.HandleFunc("/api/users", h.createUser).Methods("POST")
+	router.HandleFunc("/api/users", h.register).Methods("POST")
 	router.HandleFunc("/api/users", h.getUsers).Methods("GET")
 	// router.HandleFunc("/api/users/{id}", h.getUser).Methods("GET")
 
