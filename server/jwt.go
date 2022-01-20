@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Claims struct {
@@ -16,7 +17,7 @@ var signingKey = []byte("Four cats is too many")
 
 var expires = time.Now().Add(5 * time.Minute)
 
-func NewClaim(usr user) *Claims {
+func NewClaims(usr user) *Claims {
 	return &Claims{
 		Username: usr.Username,
 		StandardClaims: jwt.StandardClaims{
@@ -26,9 +27,19 @@ func NewClaim(usr user) *Claims {
 }
 
 func (c Claims) NewWithClaims(alg jwt.SigningMethod) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+	token := jwt.NewWithClaims(alg, c)
 	ss, err := token.SignedString(signingKey)
 
 	fmt.Println(ss, err)
 	return ss, err
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func CheckPasswordHash(hash, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
 }

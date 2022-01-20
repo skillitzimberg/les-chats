@@ -16,8 +16,8 @@ type DBConfig struct {
 	port   int
 }
 
-func NewDBConfig(db, dbuser, host string, port int) *DBConfig {
-	return &DBConfig{db, dbuser, host, port}
+func NewDBConfig(dbname, dbuser, host string, port int) *DBConfig {
+	return &DBConfig{dbname, dbuser, host, port}
 }
 
 func (conf *DBConfig) GetConnectionString() string {

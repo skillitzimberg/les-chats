@@ -10,7 +10,7 @@ import (
 )
 
 type API struct {
-	repo Repo
+	repo Repository
 }
 
 func (h *API) register(w http.ResponseWriter, r *http.Request) {
@@ -18,34 +18,65 @@ func (h *API) register(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(fmt.Sprintf("Could not read request: %s", err.Error()))
+		return
 	}
 
 	err = json.Unmarshal(reqBody, &newUser)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(fmt.Sprintf("Could not unmarshal request body: %s", err.Error()))
+		return
 	}
 
-	fmt.Println(newUser)
+	hashedPassword, err := HashPassword(newUser.Password)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(fmt.Sprintf("Could not hash password: %s", err.Error()))
+		return
+	}
+	newUser.Password = hashedPassword
 
-	expectedPassword, ok := users[newUser.Username]
-	if !ok || expectedPassword != newUser.Password {
+	err = h.repo.CreateUser(&newUser)
+	if err != nil {
+		w.WriteHeader(http.StatusConflict)
+		json.NewEncoder(w).Encode(fmt.Sprintf("Could not create user: %s", err.Error()))
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(newUser)
+}
+
+func (h *API) login(w http.ResponseWriter, r *http.Request) {
+	var loginUser user
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	err = json.Unmarshal(reqBody, &loginUser)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	var dbUser user
+	err = h.repo.GetUserByUsername(&dbUser, loginUser.Username)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	if !CheckPasswordHash(dbUser.Password, loginUser.Password) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
-	claims := NewClaim(newUser)
+	claims := NewClaims(loginUser)
 
-	tokenString, err := claims.NewWithClaims(jwt.SigningMethodES256)
+	tokenString, err := claims.NewWithClaims(jwt.SigningMethodHS256)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	err = h.repo.CreateUser(&newUser)
-	fmt.Println("CreateUser Error:", err)
-	if err != nil {
-		w.WriteHeader(http.StatusConflict)
-		json.NewEncoder(w).Encode(fmt.Sprintf("Could not create user: %s", err.Error()))
 		return
 	}
 
@@ -56,8 +87,8 @@ func (h *API) register(w http.ResponseWriter, r *http.Request) {
 		SameSite: http.SameSiteStrictMode,
 	})
 
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(newUser)
+	w.WriteHeader(http.StatusAccepted)
+	json.NewEncoder(w).Encode(loginUser)
 }
 
 func (h *API) getUsers(w http.ResponseWriter, r *http.Request) {
@@ -121,7 +152,8 @@ func (h *API) getUsers(w http.ResponseWriter, r *http.Request) {
 // }
 
 func (h *API) registerEndpoints() {
-	router.HandleFunc("/api/users", h.register).Methods("POST")
+	router.HandleFunc("/api/users/register", h.register).Methods("POST")
+	router.HandleFunc("/api/users/login", h.login).Methods("POST")
 	router.HandleFunc("/api/users", h.getUsers).Methods("GET")
 	// router.HandleFunc("/api/users/{id}", h.getUser).Methods("GET")
 
