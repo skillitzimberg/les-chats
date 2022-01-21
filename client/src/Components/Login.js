@@ -3,22 +3,19 @@ import { Link } from "react-router-dom";
 
 import "./Login.css";
 
-export default function Login({ handleLogin, currentUser }) {
+export default function Login({ handleLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [warning, setWarning] = useState("hidden");
 
-  function onSubmit(e) {
+  async function onSubmit(e) {
     e.preventDefault();
     setWarning("hidden");
-    if (
-      currentUser === null ||
-      username !== currentUser.username ||
-      password !== currentUser.password
-    ) {
+    let loginOK = await handleLogin({ username, password });
+    if (!loginOK) {
       setWarning("");
     } else {
-      handleLogin(true, currentUser);
+      window.location.replace("/");
     }
   }
 

@@ -33,24 +33,18 @@ function App() {
     loadMessages();
   }, []);
 
-  async function handleRegistration(newUsername, password) {
-    const newUser = {
-      id: users.length + 1,
-      username: newUsername,
-      password: password,
-    };
-
+  async function handleRegistration(username, password) {
     const response = await fetch("/api/users/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(newUser),
+      body: JSON.stringify({ username, password }),
     });
 
     try {
       if (response.ok) {
-        handleLogin(true, await response.json());
+        handleLogin(await response.json());
       } else {
         throw new Error(await response.text());
       }
@@ -60,19 +54,27 @@ function App() {
     }
   }
 
-  function handleLogin(loginSuccessful, user = null) {
-    if (!!user) {
-      user.isLoggedIn = loginSuccessful;
-      localStorage.setItem("currentUser", JSON.stringify(user));
-      setCurrentUser(user);
-      window.location.replace("/");
-    }
+  async function handleLogin(user = null) {
+    const response = await fetch("/api/users/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(user),
+    });
+
+    user.isLoggedIn = response.ok;
+    localStorage.setItem("currentUser", JSON.stringify(user));
+    setCurrentUser(response.ok);
+    if (response.ok) window.location.replace("/");
+    return response.ok;
   }
 
   function handleLogout() {
     currentUser.isLoggedIn = false;
     localStorage.setItem("currentUser", JSON.stringify(currentUser));
     setCurrentUser(currentUser);
+    window.location.replace("/login");
   }
 
   function handleNewMessage(message) {
@@ -93,12 +95,7 @@ function App() {
             path="/register"
             element={<Registration handleRegistration={handleRegistration} />}
           />
-          <Route
-            path="/login"
-            element={
-              <Login handleLogin={handleLogin} currentUser={currentUser} />
-            }
-          />
+          <Route path="/login" element={<Login handleLogin={handleLogin} />} />
           <Route
             path="/"
             element={

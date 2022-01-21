@@ -92,6 +92,7 @@ func (h *API) login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *API) getUsers(w http.ResponseWriter, r *http.Request) {
+	fmt.Println(r.Header["Token"])
 	users, err := h.repo.GetUsers()
 	if err != nil {
 		json.NewEncoder(w).Encode(err)

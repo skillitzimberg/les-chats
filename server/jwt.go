@@ -15,7 +15,7 @@ type Claims struct {
 
 var signingKey = []byte("Four cats is too many")
 
-var expires = time.Now().Add(5 * time.Minute)
+var expires = time.Now().Add(15 * time.Minute)
 
 func NewClaims(usr user) *Claims {
 	return &Claims{
