@@ -18,13 +18,11 @@ func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		var mySigningKey = []byte(signingKey)
-
 		token, err := jwt.Parse(c.Value, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("there was an error in parsing")
 			}
-			return mySigningKey, nil
+			return signingKey, nil
 		})
 
 		if err != nil {
