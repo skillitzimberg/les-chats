@@ -36,10 +36,11 @@ func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 
 		if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			handler.ServeHTTP(w, r)
+			return
 		}
 
 		var reserr Error
 		reserr = SetError(reserr, "Not Authorized")
-		json.NewEncoder(w).Encode(err)
+		json.NewEncoder(w).Encode(reserr)
 	}
 }
