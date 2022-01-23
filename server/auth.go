@@ -10,8 +10,8 @@ import (
 
 func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
-		if r.Header["Token"] == nil {
+		c, err := r.Cookie("token")
+		if err != nil {
 			var err Error
 			err = SetError(err, "No Token Found")
 			json.NewEncoder(w).Encode(err)
@@ -20,7 +20,7 @@ func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 
 		var mySigningKey = []byte(signingKey)
 
-		token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.Parse(c.Value, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("there was an error in parsing")
 			}
@@ -34,20 +34,10 @@ func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
-		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			if claims["role"] == "admin" {
-
-				r.Header.Set("Role", "admin")
-				handler.ServeHTTP(w, r)
-				return
-
-			} else if claims["role"] == "user" {
-
-				r.Header.Set("Role", "user")
-				handler.ServeHTTP(w, r)
-				return
-			}
+		if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			handler.ServeHTTP(w, r)
 		}
+
 		var reserr Error
 		reserr = SetError(reserr, "Not Authorized")
 		json.NewEncoder(w).Encode(err)
