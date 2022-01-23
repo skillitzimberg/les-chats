@@ -13,7 +13,7 @@ type API struct {
 	repo Repository
 }
 
-func (h *API) register(w http.ResponseWriter, r *http.Request) {
+func (api *API) register(w http.ResponseWriter, r *http.Request) {
 	var newUser user
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -32,12 +32,12 @@ func (h *API) register(w http.ResponseWriter, r *http.Request) {
 	hashedPassword, err := HashPassword(newUser.Password)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(fmt.Sprintf("Could not hash password: %s", err.Error()))
+		json.NewEncoder(w).Encode(fmt.Sprintf("Could not hasapipassword: %s", err.Error()))
 		return
 	}
 	newUser.Password = hashedPassword
 
-	err = h.repo.CreateUser(&newUser)
+	err = api.repo.CreateUser(&newUser)
 	if err != nil {
 		w.WriteHeader(http.StatusConflict)
 		json.NewEncoder(w).Encode(fmt.Sprintf("Could not create user: %s", err.Error()))
@@ -48,7 +48,7 @@ func (h *API) register(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(newUser)
 }
 
-func (h *API) login(w http.ResponseWriter, r *http.Request) {
+func (api *API) login(w http.ResponseWriter, r *http.Request) {
 	var loginUser user
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -61,7 +61,7 @@ func (h *API) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var dbUser user
-	err = h.repo.GetUserByUsername(&dbUser, loginUser.Username)
+	err = api.repo.GetUserByUsername(&dbUser, loginUser.Username)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
@@ -91,9 +91,8 @@ func (h *API) login(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(loginUser)
 }
 
-func (h *API) getUsers(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(r.Header["Token"])
-	users, err := h.repo.GetUsers()
+func (api *API) getUsers(w http.ResponseWriter, r *http.Request) {
+	users, err := api.repo.GetUsers()
 	if err != nil {
 		json.NewEncoder(w).Encode(err)
 		return
@@ -101,7 +100,7 @@ func (h *API) getUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
 }
 
-// func (h *API) getUser(w http.ResponseWriter, r *http.Request) {
+// func (api *API) getUser(w http.ResponseWriter, r *http.Request) {
 // 	var user user
 // 	vars := mux.Vars(r)
 // 	id, err := strconv.Atoi(vars["id"])
@@ -119,7 +118,7 @@ func (h *API) getUsers(w http.ResponseWriter, r *http.Request) {
 // 		json.NewEncoder(w).Encode(fmt.Sprintf("User %v not found", id))
 // }
 
-// func (h *API) createMessage(w http.ResponseWriter, r *http.Request) {
+// func (api *API) createMessage(w http.ResponseWriter, r *http.Request) {
 // 	var newMessage message
 // 	reqBody, err := ioutil.ReadAll(r.Body)
 // 	if err != nil {
@@ -130,11 +129,11 @@ func (h *API) getUsers(w http.ResponseWriter, r *http.Request) {
 // 	json.NewEncoder(w).Encode(newMessage)
 // }
 
-// func (h *API) getMessages(w http.ResponseWriter, r *http.Request) {
+// func (api *API) getMessages(w http.ResponseWriter, r *http.Request) {
 // 	json.NewEncoder(w).Encode(messages)
 // }
 
-// func (h *API) getMessage(w http.ResponseWriter, r *http.Request) {
+// func (api *API) getMessage(w http.ResponseWriter, r *http.Request) {
 // 	var message message
 // 	vars := mux.Vars(r)
 // 	id, err := strconv.Atoi(vars["id"])
@@ -152,13 +151,13 @@ func (h *API) getUsers(w http.ResponseWriter, r *http.Request) {
 // 		json.NewEncoder(w).Encode(fmt.Sprintf("Message %v not found", id))
 // }
 
-func (h *API) registerEndpoints() {
-	router.HandleFunc("/api/users/register", h.register).Methods("POST")
-	router.HandleFunc("/api/users/login", h.login).Methods("POST")
-	router.HandleFunc("/api/users", h.getUsers).Methods("GET")
-	// router.HandleFunc("/api/users/{id}", h.getUser).Methods("GET")
+func (api *API) registerEndpoints() {
+	router.HandleFunc("/api/users/register", api.register).Methods("POST")
+	router.HandleFunc("/api/users/login", api.login).Methods("POST")
+	router.HandleFunc("/api/users", IsAuthorized(api.getUsers)).Methods("GET")
+	// router.HandleFunc("/api/users/{id}", api.getUser).Methods("GET")
 
-	// router.HandleFunc("/api/messages", h.createMessage).Methods("POST")
-	// router.HandleFunc("/api/messages", h.getMessages).Methods("GET")
-	// router.HandleFunc("/api/messages/{id}", h.getMessage).Methods("GET")
+	// router.HandleFunc("/api/messages", api.createMessage).Methods("POST")
+	// router.HandleFunc("/api/messages", api.getMessages).Methods("GET")
+	// router.HandleFunc("/api/messages/{id}", api.getMessage).Methods("GET")
 }
