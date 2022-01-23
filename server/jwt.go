@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -29,8 +28,6 @@ func NewClaims(usr user) *Claims {
 func (c Claims) NewWithClaims(alg jwt.SigningMethod) (string, error) {
 	token := jwt.NewWithClaims(alg, c)
 	ss, err := token.SignedString(signingKey)
-
-	fmt.Println(ss, err)
 	return ss, err
 }
 
