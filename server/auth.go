@@ -10,11 +10,10 @@ import (
 
 func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusUnauthorized)
 		c, err := r.Cookie("token")
 		if err != nil {
-			var err Error
-			err = SetError(err, "No Token Found")
-			json.NewEncoder(w).Encode(err)
+			json.NewEncoder(w).Encode(SetError("no token found", err).Error())
 			return
 		}
 
@@ -26,19 +25,16 @@ func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 		})
 
 		if err != nil {
-			var err Error
-			err = SetError(err, "Your Token has been expired")
-			json.NewEncoder(w).Encode(err)
+			json.NewEncoder(w).Encode(SetError("your token has been expired", err).Error())
 			return
 		}
 
 		if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			w.WriteHeader(http.StatusOK)
 			handler.ServeHTTP(w, r)
 			return
 		}
 
-		var reserr Error
-		reserr = SetError(reserr, "Not Authorized")
-		json.NewEncoder(w).Encode(reserr)
+		json.NewEncoder(w).Encode(SetError("not authorized", err).Error())
 	}
 }

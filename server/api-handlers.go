@@ -94,9 +94,12 @@ func (api *API) login(w http.ResponseWriter, r *http.Request) {
 func (api *API) getUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := api.repo.GetUsers()
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(err)
 		return
 	}
+
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(users)
 }
 

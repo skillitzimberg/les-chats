@@ -1,12 +1,7 @@
 package main
 
-type Error struct {
-	IsError bool   `json:"isError"`
-	Message string `json:"message"`
-}
+import "fmt"
 
-func SetError(err Error, message string) Error {
-	err.IsError = true
-	err.Message = message
-	return err
+func SetError(message string, err error) error {
+	return fmt.Errorf("%s: %v", message, err)
 }
