@@ -25,12 +25,11 @@ func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 		})
 
 		if err != nil {
-			json.NewEncoder(w).Encode(SetError("your token has been expired", err).Error())
+			json.NewEncoder(w).Encode(SetError("your token has expired", err).Error())
 			return
 		}
 
 		if _, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			w.WriteHeader(http.StatusOK)
 			handler.ServeHTTP(w, r)
 			return
 		}
