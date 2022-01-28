@@ -10,9 +10,9 @@ import (
 
 func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusUnauthorized)
 		c, err := r.Cookie("token")
 		if err != nil {
+			w.WriteHeader(http.StatusForbidden)
 			json.NewEncoder(w).Encode(SetError("no token found", err).Error())
 			return
 		}
@@ -23,8 +23,8 @@ func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 			}
 			return signingKey, nil
 		})
-
 		if err != nil {
+			w.WriteHeader(http.StatusForbidden)
 			json.NewEncoder(w).Encode(SetError("your token has expired", err).Error())
 			return
 		}
