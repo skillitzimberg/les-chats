@@ -8,19 +8,22 @@ import (
 )
 
 type Claims struct {
-	Username string
+	Username   string
+	Expiration time.Time
 	jwt.StandardClaims
 }
 
 var signingKey = []byte("Four cats is too many")
 
-var expires = time.Now().Add(1 * time.Minute)
-
 func NewClaims(usr user) *Claims {
+	issuedAt := time.Now()
+	expiresAt := issuedAt.Add(1 * time.Minute)
 	return &Claims{
-		Username: usr.Username,
+		Username:   usr.Username,
+		Expiration: expiresAt,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expires.Unix(),
+			IssuedAt:  issuedAt.Unix(),
+			ExpiresAt: expiresAt.Unix(),
 		},
 	}
 }
