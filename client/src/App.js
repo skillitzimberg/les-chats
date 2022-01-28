@@ -65,7 +65,7 @@ function App() {
 
     user.isLoggedIn = response.ok;
     localStorage.setItem("currentUser", JSON.stringify(user));
-    setCurrentUser(response.ok);
+    setCurrentUser(user);
     if (response.ok) window.location.replace("/");
     return response.ok;
   }
