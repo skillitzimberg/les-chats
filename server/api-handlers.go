@@ -73,7 +73,6 @@ func (api *API) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	claims := NewClaims(loginUser)
-
 	tokenString, err := claims.NewWithClaims(jwt.SigningMethodHS256)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -83,8 +82,9 @@ func (api *API) login(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "token",
 		Value:    tokenString,
-		Expires:  expires,
+		Expires:  claims.Expiration,
 		SameSite: http.SameSiteStrictMode,
+		HttpOnly: true,
 	})
 
 	w.WriteHeader(http.StatusAccepted)
