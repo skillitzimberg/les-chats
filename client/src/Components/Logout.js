@@ -1,6 +1,8 @@
 import React from "react";
 
-const Logout = ({ logout }) => {
+import { logout } from "./auth-utils";
+
+const Logout = () => {
   return <button onClick={logout}>Logout</button>;
 };
 

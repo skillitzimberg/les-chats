@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 
 import "./Registration.css";
+import { register, login } from "./auth-utils";
 
-export default function Registration({ handleRegistration }) {
+export default function Registration({ setTokenIsValid }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -10,12 +11,26 @@ export default function Registration({ handleRegistration }) {
 
   const warningClass = "warn";
 
-  function onSubmit(e) {
+  async function onSubmit(e) {
     e.preventDefault();
     if (confirmPassword !== password) {
       setPasswordWarning("");
     } else {
-      handleRegistration(username, password);
+      const response = await register(username, password);
+
+      try {
+        if (response.ok) {
+          const user = await response.json();
+          const loginResponse = login(user);
+          console.log(loginResponse);
+          setTokenIsValid(loginResponse.expiresAt > Date.now() / 1000);
+        } else {
+          throw new Error(await response.text());
+        }
+      } catch (e) {
+        console.log(e.message);
+        alert(e.message);
+      }
     }
   }
 

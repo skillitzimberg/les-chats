@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 import "./Login.css";
+import { login } from "./auth-utils";
 
-export default function Login({ handleLogin }) {
+export default function Login({ setTokenIsValid }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [warning, setWarning] = useState("hidden");
@@ -11,11 +12,14 @@ export default function Login({ handleLogin }) {
   async function onSubmit(e) {
     e.preventDefault();
     setWarning("hidden");
-    let loginOK = await handleLogin({ username, password });
-    if (!loginOK) {
+    let response = await login({ username, password });
+    console.log(response);
+    if (!response.ok) {
       setWarning("");
     } else {
-      window.location.replace("/");
+      const loginData = await response.json();
+      console.log(loginData.expiresAt > Date.now() / 1000);
+      setTokenIsValid(loginData.expiresAt > Date.now() / 1000);
     }
   }
 
