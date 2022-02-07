@@ -88,7 +88,13 @@ func (api *API) login(w http.ResponseWriter, r *http.Request) {
 	})
 
 	w.WriteHeader(http.StatusAccepted)
-	json.NewEncoder(w).Encode(loginUser)
+	json.NewEncoder(w).Encode(struct {
+		LoginUser  user  `json:"loginUser"`
+		Expiration int64 `json:"expiresAt"`
+	}{
+		LoginUser:  loginUser,
+		Expiration: claims.ExpiresAt,
+	})
 }
 
 func (api *API) getUsers(w http.ResponseWriter, r *http.Request) {
