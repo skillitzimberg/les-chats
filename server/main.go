@@ -1,11 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 var router = mux.NewRouter()
@@ -20,13 +23,17 @@ func main() {
 
 	serveClient()
 
+	godotenv.Load()
+	port := os.Getenv("PORT")
+	listeningOn := fmt.Sprintf("127.0.0.1:%v", port)
+
 	srv := &http.Server{
 		Handler:      router,
-		Addr:         "127.0.0.1:3000",
+		Addr:         listeningOn,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
 
-	log.Println("Listening on :3000...")
+	log.Println("We're listening on:", listeningOn)
 	log.Fatal(srv.ListenAndServe())
 }
