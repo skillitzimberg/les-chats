@@ -18,6 +18,13 @@ export async function login(user = null) {
   });
 }
 
+export function tokenIsExpired() {
+  const tokenExpiration = JSON.parse(localStorage.getItem("tokenExpiration"));
+  console.log(tokenExpiration < Date.now() / 1000);
+  return tokenExpiration < Date.now() / 1000;
+}
+
 export function logout() {
+  localStorage.setItem("tokenExpiration", null);
   console.log("Logged Out.");
 }
