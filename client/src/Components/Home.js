@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import ChatForm from "./ChatForm";
 import Logout from "./Logout";
 import Messages from "./Messages";
 import Users from "./Users";
 
-export default function Home() {
+export default function Home({ setTokenIsValid }) {
   const [users, setUsers] = useState([]);
   const [messages, setMessages] = useState([]);
 
@@ -42,7 +42,7 @@ export default function Home() {
       <section id="chats">
         <Messages messages={messages} />
         <ChatForm handleNewMessage={handleNewMessage} />
-        <Logout />
+        <Logout setTokenIsValid={setTokenIsValid} />
       </section>
     </>
   );
