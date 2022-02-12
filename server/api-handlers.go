@@ -13,6 +13,10 @@ type API struct {
 	repo Repository
 }
 
+func (api *API) ping(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode("King Pong")
+}
+
 func (api *API) register(w http.ResponseWriter, r *http.Request) {
 	var newUser user
 	reqBody, err := ioutil.ReadAll(r.Body)
@@ -68,6 +72,7 @@ func (api *API) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !CheckPasswordHash(dbUser.Password, loginUser.Password) {
+		fmt.Println("Passwords don't match")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
@@ -87,12 +92,17 @@ func (api *API) login(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	})
 
+	userJSON, err := dbUser.MarshalJSON()
+	fmt.Println(string(userJSON))
+	if err != nil {
+		fmt.Println("Could not marshal user to JSON")
+	}
 	w.WriteHeader(http.StatusAccepted)
 	json.NewEncoder(w).Encode(struct {
-		LoginUser  user  `json:"loginUser"`
-		Expiration int64 `json:"expiresAt"`
+		LoginUser  string `json:"loginUser"`
+		Expiration int64  `json:"expiresAt"`
 	}{
-		LoginUser:  loginUser,
+		LoginUser:  string(userJSON),
 		Expiration: claims.ExpiresAt,
 	})
 }
@@ -160,6 +170,7 @@ func (api *API) getUsers(w http.ResponseWriter, r *http.Request) {
 // }
 
 func (api *API) registerEndpoints() {
+	router.HandleFunc("/api/users/ping", api.ping).Methods("POST")
 	router.HandleFunc("/api/users/register", api.register).Methods("POST")
 	router.HandleFunc("/api/users/login", api.login).Methods("POST")
 	router.HandleFunc("/api/users", IsAuthorized(api.getUsers)).Methods("GET")
