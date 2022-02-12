@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"gorm.io/gorm"
 )
 
@@ -30,6 +28,5 @@ func (r *Repository) GetUsers() (*[]user, error) {
 }
 
 func (r *Repository) GetUserByUsername(usr *user, username string) error {
-	fmt.Println("GetUserByUsername", usr.Username, username)
 	return r.db.Where("username = ?", username).First(&usr).Error
 }
