@@ -9,17 +9,20 @@ export default function Login({ setTokenIsValid }) {
   const [password, setPassword] = useState("");
   const [warning, setWarning] = useState("hidden");
 
+  function handleLogin(loginResponse) {
+    const tokenExpiration = loginResponse.expiresAt;
+    localStorage.setItem("tokenExpiration", tokenExpiration);
+    setTokenIsValid(tokenExpiration > Date.now() / 1000);
+  }
+
   async function onSubmit(e) {
     e.preventDefault();
     setWarning("hidden");
     let response = await login({ username, password });
-    console.log(response);
     if (!response.ok) {
       setWarning("");
     } else {
-      const loginData = await response.json();
-      console.log(loginData.expiresAt > Date.now() / 1000);
-      setTokenIsValid(loginData.expiresAt > Date.now() / 1000);
+      handleLogin(await response.json());
     }
   }
 
